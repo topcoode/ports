@@ -1,0 +1,45 @@
+package main
+
+import (
+	"fmt"
+	"net"
+)
+
+func main() {
+	port1 := "8080"
+	port2 := "8081"
+	listener1, err := net.Listen("tcp", ":"+port1)
+	if err != nil {
+		fmt.Println("error in port no 1:", err)
+	}
+	defer listener1.Close()
+	fmt.Printf("listening on port %s\n", port1)
+	listener2, err := net.Listen("tcp", ":"+port2)
+	if err != nil {
+		fmt.Println("error in port no 1:", err)
+	}
+	defer listener2.Close()
+	fmt.Printf("listening on port %s\n", +port2)
+	go func() {
+		for {
+			conn, err := listener1.Accept()
+			if err != nil {
+				fmt.Println("error in go routine", err)
+			}
+			go handleConnection(conn)
+		}
+	}()
+	go func() {
+		for {
+			conn, err := listener2.Accept()
+			if err != nil {
+				fmt.Println("error in go routine", err)
+			}
+			go handleConnection(conn)
+		}
+	}()
+	select {}
+}
+func handleConnection(conn net.Conn) {
+	defer conn.Close()
+}
