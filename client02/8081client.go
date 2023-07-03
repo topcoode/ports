@@ -18,18 +18,21 @@ type Userdata struct {
 func main() {
 	router := gin.Default()
 	router.POST("/StoringClientData", StoringClientData)
-	router.POST("/SendingClientData", SendingClientData)
+	router.GET("/SendingClientData", SendingClientData)
 
 	router.Run(":8081")
 }
 func StoringClientData(c *gin.Context) {
-	var userdata Userdata
+	userdata := &Userdata{}
 	err := c.ShouldBindJSON(userdata)
 	if err != nil {
 		fmt.Println("error in binding", err)
 	}
 
-	db := postgres.Postgresconnection()
+	db, err := postgres.Postgresconnection()
+	if err != nil {
+		fmt.Println("the err in the db connection---->", err)
+	}
 	sytx := `INSERT INTO client2 VALUES($1)`
 	connection, err := db.Exec(sytx, userdata.Networkfunction)
 	if err != nil {
@@ -44,7 +47,10 @@ func StoringClientData(c *gin.Context) {
 
 }
 func SendingClientData(c *gin.Context) {
-	db := postgres.Postgresconnection()
+	db, err := postgres.Postgresconnection()
+	if err != nil {
+		fmt.Println("error in db connection----->", err)
+	}
 	rows, err := db.Query("SELECT Networkfunction FROM client2")
 	if err != nil {
 		fmt.Println(err)

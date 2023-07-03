@@ -18,13 +18,14 @@ func main() {
 	router.Run(":8082")
 }
 func DataFrmClient2(c *gin.Context) {
+	fmt.Println("the value of c:", c)
 	var userdata Userdata
 	err := c.ShouldBind(userdata)
 	if err != nil {
 		fmt.Println("error in binding", err)
 	}
 
-	db := postgres.Postgresconnection()
+	db, err := postgres.Postgresconnection()
 	sytx := `INSERT INTO client3 VALUES($1)`
 	connection, err := db.Exec(sytx, userdata.Networkfunction)
 	if err != nil {

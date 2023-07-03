@@ -9,7 +9,7 @@ import (
 
 var DB *sql.DB
 
-func Postgresconnection() *sql.DB {
+func Postgresconnection() (*sql.DB, error) {
 	connStr := "postgres://postgres:mahi@localhost/postgres?sslmode=disable"
 
 	db, err := sql.Open("postgres", connStr)
@@ -23,5 +23,5 @@ func Postgresconnection() *sql.DB {
 	}
 	DB = db
 	fmt.Println("Successfully connected to the database!")
-	return db
+	return db, err
 }
